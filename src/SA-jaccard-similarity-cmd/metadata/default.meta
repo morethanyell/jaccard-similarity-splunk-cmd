@@ -1,0 +1,15 @@
+[]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[commands/jaccard]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[searchbnf/jaccard-command]
+access = read : [ * ], write : [ admin ]
+export = system
+
+[searchbnf/jaccard-options]
+access = read : [ * ], write : [ admin ]
+export = system
