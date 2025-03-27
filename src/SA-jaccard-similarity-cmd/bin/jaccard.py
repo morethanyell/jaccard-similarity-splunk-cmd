@@ -43,25 +43,22 @@ class jaccard(StreamingCommand):
 
     @staticmethod
     def get_ngrams(string, n=2):
-        return [string[i:i+n] for i in range(len(string) - n + 1)]
+        return set(string[i:i+n] for i in range(len(string) - n + 1))
 
     @staticmethod
     def jaccard_similarity(self, a, b, n=2):
-        a_ngrams = set(self.get_ngrams(a, n))
-        b_ngrams = set(self.get_ngrams(b, n))
-
-        return len(a_ngrams & b_ngrams) / len(a_ngrams | b_ngrams)
+        intersection = len(a & b)
+        union = len(a | b)
+        return intersection / union if union else 0
 
     @staticmethod
     def avg_jaccard_similarity(self, data, n=2):
-       
+        ngram_map = {s: self.get_ngrams(s, n) for s in data}
         similarities = [
-            self.jaccard_similarity(self, a, b, n) for a, b in itertools.combinations(data, 2)
+            self.jaccard_similarity(ngram_map[a], ngram_map[b])
+            for a, b in itertools.combinations(data, 2)
         ]
-
-        mean = sum(similarities) / len(similarities)
-
-        return mean if similarities else 0
+        return sum(similarities) / len(similarities) if similarities else 0
 
 
 dispatch(jaccard, sys.argv, sys.stdin, sys.stdout, __name__)
