@@ -23,10 +23,12 @@ class jaccard(StreamingCommand):
 
     def stream(self, events):
 
+        suffix = self.suffix if self.suffix else self.textfield
+
         for event in events:
 
-            data = event[self.textfield]
-            suffix = self.suffix if self.suffix else self.textfield
+            input_data = event[self.textfield]
+            data = [item for item in input_data if item and item.strip()]
 
             if self.safe_len(data) == 1:
                 event[f'jaccard_distance_{suffix}'] = "Invalid MV field (must contain more than 1 item)."
@@ -55,7 +57,7 @@ class jaccard(StreamingCommand):
     def avg_jaccard_similarity(self, data, n=2):
         ngram_map = {s: self.get_ngrams(s, n) for s in data}
         similarities = [
-            self.jaccard_similarity(ngram_map[a], ngram_map[b])
+            self.jaccard_similarity(self, ngram_map[a], ngram_map[b])
             for a, b in itertools.combinations(data, 2)
         ]
         return sum(similarities) / len(similarities) if similarities else 0
